@@ -9,12 +9,6 @@
 
  Command Execution Vulnerability
 
-## Severity
-
-- **CVSS v3.1**: 9.8 (Critical)  `CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H`
-- **CWE**: CWE-78 (Improper Neutralization of Special Elements used in an OS Command)
-- **Attack Vector**: Network (no authentication, no user interaction)
-- **Privileges Required**: None (reachable without authentication in the initial setup wizard state)
 
 ## Affected Environment
 
@@ -31,30 +25,36 @@ The WAVLINK WL-WN579A3-A router contains a command injection vulnerability in th
 
 ### Vulnerability Point
 
-![image-20260804201524488](..\image-20260804201524488.png)
+<img width="567" height="194" alt="image-20260804201524488" src="https://github.com/user-attachments/assets/f0b1c9f1-f498-4f12-9dd8-130118abc3bb" />
 
-<img width="688" height="214" alt="image-20260804190655990" src="https://github.com/user-attachments/assets/8543e29d-7e6a-4443-bef9-1d1a72fab2f8" />
 
 
 When `page=wzdgwMesh`, execution enters `sub_404904`.
 
-![image-20260804190655990](.\imags\image-20260804190655990.png)
+<img width="688" height="214" alt="image-20260804190655990" src="https://github.com/user-attachments/assets/b2703307-3170-44a0-85f7-634167ec004d" />
+
+
 
 The function below receives the parameters `Wan0T`, `wl_Method`, `wlan_ssid`, etc.
 
-![image-20260804195428853](.\imags\image-20260804195428853.png)
+<img width="723" height="348" alt="image-20260804195428853" src="https://github.com/user-attachments/assets/08ee0b63-44f7-45f5-bf27-e09fef4a229b" />
+
 
 When the input passes through the blacklist check `sub_40A93C`:
 
-![image-20260804200159032](.\imags\image-20260804200159032.png)
+
+
+<img width="777" height="238" alt="image-20260804200159032" src="https://github.com/user-attachments/assets/8fe22c9f-bbe0-4cde-8eb6-bdfb8efd1728" />
 
 It only checks for `|` and backticks (`` ` ``).
 
-![image-20260804200322454](.\imags\image-20260804200322454.png)
+<img width="516" height="315" alt="image-20260804200322454" src="https://github.com/user-attachments/assets/03eb7b02-5e72-4033-ac3a-2f196a8bf0ab" />
 
 Execution then continues into the vulnerable sink `system()`:
 
-![image-20260804200655119](.\imags\image-20260804200655119.png)
+<img width="726" height="404" alt="image-20260804200655119" src="https://github.com/user-attachments/assets/92371d5a-b5a5-4469-84b1-10e56342f5b6" />
+
+
 
 Since the blacklist does not filter `;`, `"`, `>`, `#`, etc., an attacker can craft a command injection payload and achieve root RCE.
 
@@ -114,12 +114,15 @@ cat /etc/config/winstar | grep User
 ```
 **The status before and after the reset is shown in the figure below:**
 
-![image-20260804201843712](.\imags\image-20260804201843712.png)
+<img width="1145" height="154" alt="image-20260804201843712" src="https://github.com/user-attachments/assets/be981fb5-40cd-4217-89e6-4b77af5add0e" />
 
-![image-20260804201723545](.\imags\image-20260804201723545.png)
+
+<img width="1237" height="574" alt="image-20260804201723545" src="https://github.com/user-attachments/assets/5ae60491-d74c-4c77-a3ff-722bc3d67d4e" />
+
 
 **2. Send exploit request without cookies** (as described in the previous section, with `wlan_ssid=Z%22%3Becho%20getshell%20%3E%20%2Fcmd.txt%3B%23`, and the Referer header containing `ap.setup` to pass the validation check).
 
 **3. Verification:** The file `/cmd.txt` appears in the device's root directory, containing the string `getshell`, confirming that the command was executed with root privileges.
 
-![image-20260804201919954](.\imags\image-20260804201919954.png)
+
+<img width="1530" height="655" alt="image-20260804201919954" src="https://github.com/user-attachments/assets/2e14211a-c66f-4dd6-8743-787be9eb4ac8" />
