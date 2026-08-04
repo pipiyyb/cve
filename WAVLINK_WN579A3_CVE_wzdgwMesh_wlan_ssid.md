@@ -33,6 +33,9 @@ The WAVLINK WL-WN579A3-A router contains a command injection vulnerability in th
 
 ![image-20260804201524488](..\image-20260804201524488.png)
 
+<img width="688" height="214" alt="image-20260804190655990" src="https://github.com/user-attachments/assets/8543e29d-7e6a-4443-bef9-1d1a72fab2f8" />
+
+
 When `page=wzdgwMesh`, execution enters `sub_404904`.
 
 ![image-20260804190655990](.\imags\image-20260804190655990.png)
