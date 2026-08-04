@@ -24,29 +24,36 @@ The WAVLINK WL-WN579A3-A router contains a command injection vulnerability in th
 
 When `page=wan`, execution enters `sub_401710`.
 
-![image-20260804215407383](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260804215407383.png)
+<img width="693" height="170" alt="图片" src="https://github.com/user-attachments/assets/6de0dd4a-03f4-4b87-8106-93df5f928693" />
+
 
 With `Wan0T=3` the pppoe branch is entered, and with `RussianPPPoE_flag=1` the flow reaches the sink:
 
-![image-20260804222916790](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260804222916790.png)
+<img width="1255" height="872" alt="图片" src="https://github.com/user-attachments/assets/a44753c4-2b57-4069-8224-8376b3ce8248" />
 
-![image-20260804224459255](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260804224459255.png)
+
+<img width="1493" height="609" alt="图片" src="https://github.com/user-attachments/assets/c756224a-fdd1-4edd-baf2-69e9988248b2" />
+
 
 **Here, only the semicolon `;` is checked.**
 
-![image-20260804224859935](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260804224859935.png)
+<img width="966" height="408" alt="图片" src="https://github.com/user-attachments/assets/b7dfe729-86cd-470c-96f5-31b6a0cf2e22" />
+
 
 **The `RussianPPPoE_flag` must be set to `"1"` in order to reach the vulnerable code path.**
 
-![image-20260804225444640](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260804225444640.png)
+<img width="1281" height="488" alt="图片" src="https://github.com/user-attachments/assets/7e6dd13e-22da-47eb-9b8f-3e749fcb4950" />
+
 
 **Here, `sub_40A93C` is called to check whether the string contains the pipe character `|` or the backtick ```.**
 
-![image-20260804225517566](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260804225517566.png)
+<img width="761" height="586" alt="图片" src="https://github.com/user-attachments/assets/4c2ad645-4231-4497-9c6b-74c3785611f5" />
+
 
 **After passing the check, it enters `sub_408610`.**
 
-![image-20260804225736138](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260804225736138.png)
+<img width="996" height="240" alt="图片" src="https://github.com/user-attachments/assets/ec34e982-935f-4f95-9d4e-68ea80f374fb" />
+
 
 **Finally, command injection can be constructed.**
 
@@ -112,13 +119,16 @@ In the initial setup wizard state (fresh out-of-box or after factory reset, `Use
 1. (Required only before the first injection if the device was already initialized) Reset the wizard flag on the device:
 
    **Let's simulate it before proceeding.**
+   
+<img width="1488" height="600" alt="图片" src="https://github.com/user-attachments/assets/4616c5ed-75b0-4137-a6f6-43b1d1850f36" />
 
-   ![image-20260804230158898](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260804230158898.png)
 
 **Before sending the payload**
 
-![image-20260804230354838](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260804230354838.png)
+<img width="2109" height="931" alt="图片" src="https://github.com/user-attachments/assets/f58cebcf-7cfd-4522-8db1-bb79f76fc3f4" />
+
 
 **After sending the payload**
 
-![image-20260804230441240](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260804230441240.png)
+<img width="1610" height="747" alt="图片" src="https://github.com/user-attachments/assets/7567657e-dc54-4e2e-be7a-3ca2df325056" />
+
