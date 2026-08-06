@@ -19,11 +19,13 @@ The vulnerability is triggered in the `sub_405B5C` function, involving the user-
 
 It only performs login verification and Referer checking.
 
-![image-20260806103840185](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260806103840185.png)
+<img width="1687" height="481" alt="图片" src="https://github.com/user-attachments/assets/570f6b27-bbad-4f9e-a995-852df2b92927" />
+
 
 The Referer check in `sub_402224` is virtually useless / effectively nonexistent.
 
-![image-20260806104100654](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260806104100654.png)
+<img width="2181" height="989" alt="图片" src="https://github.com/user-attachments/assets/e3eb5ae0-527c-4ba7-a33e-62e120ceaf96" />
+
 
 To bypass the check, avoid the following two conditions:
 
@@ -32,19 +34,25 @@ To bypass the check, avoid the following two conditions:
 
 Then proceed down the `function=set` branch.
 
-![image-20260806104529259](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260806104529259.png)
+<img width="1278" height="644" alt="图片" src="https://github.com/user-attachments/assets/ffd5eb88-91f4-4f4a-8055-02fcd8ce2cad" />
 
-Now we arrive at the injectable `name` parameter. The function `sub_4169A0` acts as a blacklist filter that performs string validation on the user-supplied `name` input.![image-20260806104722537](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260806104722537.png)
+
+Now we arrive at the injectable `name` parameter. The function `sub_4169A0` acts as a blacklist filter that performs string validation on the user-supplied `name` input.
+
+<img width="1631" height="655" alt="图片" src="https://github.com/user-attachments/assets/bb84cb90-f82e-467b-a68e-39c14a0baca5" />
+
 
 Only backticks (```) and semicolons (`;`) are filtered.
 This is the weakness. As a result, we can still use other characters such as `|`, `>`, `&`, etc. to bypass the filter and construct command injection payloads.
 Further down, the `popen` function is called to execute the constructed command.
 
-![image-20260806105224140](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260806105224140.png)
+<img width="1817" height="632" alt="图片" src="https://github.com/user-attachments/assets/08e34013-45c9-4b06-9530-55a7df132e8c" />
+
 
 First, log in to obtain a valid cookie.
 
-![image-20260806105515035](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260806105515035.png)
+<img width="1248" height="586" alt="图片" src="https://github.com/user-attachments/assets/5b8bc95c-6945-40b0-9b89-77bcb78dabf2" />
+
 
 **exp**
 
@@ -88,10 +96,11 @@ Connection: close
 
 **Prior to execution**
 
-![image-20260806110101384](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260806110101384.png)
+<img width="1146" height="294" alt="图片" src="https://github.com/user-attachments/assets/a82a22eb-50ca-4a28-9096-e301ddf49d20" />
+
 
 ## Reproduction Result
 
-![image-20260806110422985](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260806110422985.png)
+<img width="1349" height="642" alt="图片" src="https://github.com/user-attachments/assets/293aed99-58a7-4705-992c-96f6626b020e" />
 
-![image-20260806110439233](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260806110439233.png)
+<img width="1181" height="327" alt="图片" src="https://github.com/user-attachments/assets/9265579c-2296-4b2a-a2b9-eb69ae2a4d41" />
