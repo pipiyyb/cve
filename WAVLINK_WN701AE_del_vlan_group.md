@@ -21,13 +21,16 @@ WAVLINK WN701AE 固件（版本 WAVLINK-WN701AE-WO-M01AE_V260105-FM-BY.bin）ioo
 
 
 
-![image-20260807191418172](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260807191418172.png)
+<img width="1209" height="221" alt="图片" src="https://github.com/user-attachments/assets/10c1806d-5e4f-42f0-a806-a5a5b235eec2" />
 
 
 
-![image-20260807191526628](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260807191526628.png)
 
-![image-20260807182955585](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260807182955585.png)
+<img width="1559" height="1348" alt="图片" src="https://github.com/user-attachments/assets/ac465c8b-92ad-4f5e-bf4b-fb83570152d8" />
+
+
+<img width="1157" height="674" alt="图片" src="https://github.com/user-attachments/assets/42d000ac-5f74-4f9a-99e9-6a8421c34378" />
+
 
 # 漏洞利用
 
@@ -56,6 +59,6 @@ Connection: close
 ```
 
 
+<img width="1628" height="480" alt="图片" src="https://github.com/user-attachments/assets/70f34924-464b-40dc-9e2a-1b286824cbfc" />
 
-![image-20260808170808603](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260808170808603.png)
 
