@@ -18,16 +18,18 @@ An authenticated attacker can inject arbitrary shell commands through the `desti
 #   Vulnerability Details
 
 In the ioos web backend, within the `wireguard_cli_group` handler of `/protocol.csp` (`fname=net&opt=wireguard_cli_group&function=set`), the request parameters `group_id` and `group_name` are not sanitized before being directly concatenated into the shell command `uci set ovpnclient.@groups[-1].group_id='%s'`, which is then executed via `system()`. Under the device's factory default configuration (`FirstLogin=1`, which enables passwordless authentication), an attacker needs only two steps to obtain a root shell: first, send a request to `fname=system&opt=login&function=set&usrid=` to retrieve a session token; then, with the token, access the injection payload `group_id=aa" | <arbitrary command> #`, which triggers the execution of arbitrary commands with root privileges.
+<img width="793" height="184" alt="图片" src="https://github.com/user-attachments/assets/2d930758-4935-4e46-80cb-43d0a8d73806" />
 
-![image-20260809210041383](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809210041383.png)
 
-![image-20260809210028547](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809210028547.png)
+<img width="1143" height="632" alt="图片" src="https://github.com/user-attachments/assets/82daa1fa-d235-4450-ba2a-84156bf63e06" />
+
 
 Obtain the token, then perform the exploit.
 
 http://192.168.10.3/protocol.csp?fname=system&opt=login&function=set&usrid=
 
-![image-20260809205450743](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809205450743.png)
+<img width="1106" height="186" alt="图片" src="https://github.com/user-attachments/assets/48787f87-8433-45ac-8422-514be2f2565b" />
+
 
 拿到token，再进行漏洞利用
 
@@ -74,11 +76,11 @@ Connection: close
 ```
 
 # **Reproduction Results**
-
-![image-20260809200832092](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809200832092.png)
-
+<img width="1176" height="179" alt="图片" src="https://github.com/user-attachments/assets/4ae29d9c-c675-4d47-a7d8-4c93e7655d6e" />
 
 
-![image-20260809205514044](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809205514044.png)
 
-![image-20260809205531254](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809205531254.png)
+
+<img width="1428" height="798" alt="图片" src="https://github.com/user-attachments/assets/07fca03e-8ef7-4c53-8182-059e4e4b49ce" />
+
+<img width="1111" height="336" alt="图片" src="https://github.com/user-attachments/assets/f3c2334c-9fff-4f53-9ada-e2ab68bbe009" />
