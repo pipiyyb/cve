@@ -19,9 +19,10 @@ An attacker can trigger an immediate crash of the backend process by sending an 
 
 In the ioos web backend, within the `openvpn_ser` handler of `/protocol.csp` (`fname=net&opt=openvpn_ser&function=set`, function `sub_4170A0`), the request parameter `openvpn_ip` is copied via `strcpy()` into a mere **16-byte** stack buffer (`[xsp+0x140]`, call site `@0x4173C8`) without any length validation. Within the same function, there are **7 additional** unbounded `strcpy()` calls (`@0x4173D4` – `@0x417430`). The function does **not** have stack protector enabled (no canary check at the function epilogue). The return address `X30` is stored at `[xsp+0x248]`, which is **264 bytes** away from the `openvpn_ip` buffer — sending a value of 264 bytes or more precisely overwrites `X30` (verified: 264 bytes causes a crash, 260 bytes does not). Under the device's factory default configuration (`FirstLogin=1`, passwordless authentication enabled), an attacker needs only two steps to trigger this: first, request `fname=system&opt=login&function=set&usrid=` to obtain a session token; then, with the token, send a request with `openvpn_ip=AAAA...` (≥264 bytes). The ioos backend immediately crashes with a Segmentation Fault, and the `lighttpd` frontend proxy returns `500`/`503`, rendering all dynamic management interfaces unavailable.
 
-![image-20260809225707436](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809225707436.png)
+<img width="1062" height="212" alt="图片" src="https://github.com/user-attachments/assets/0f17993e-be32-4c7a-a846-694a53cf8fcd" />
 
-![image-20260809225517240](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809225517240.png)
+<img width="1850" height="1458" alt="图片" src="https://github.com/user-attachments/assets/e5371c4a-1f90-4317-9d05-53574e5ae4ae" />
+
 
 **exp**
 
@@ -51,10 +52,11 @@ except Exception:
 
 # **Reproduction Results**
 
-执行前观察后端 ioos 还是存活着
+Before executing, check whether the backend IOOS is still alive.
 
-![image-20260809231509538](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809231509538.png)
+<img width="1125" height="466" alt="图片" src="https://github.com/user-attachments/assets/2b0ce5cb-5c0a-478d-9e17-b988df73cba1" />
 
-执行
 
-![image-20260809231556851](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809231556851.png)
+Execute
+
+<img width="1246" height="669" alt="图片" src="https://github.com/user-attachments/assets/fb61e51b-1df6-46a3-b61d-c21915f089dc" />
