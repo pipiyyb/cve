@@ -9,7 +9,7 @@
 
 # Description
 
-​		WAVLINK WN536AX6-A 路由器的 `/protocol.csp` 中 `host_black` 处理器存在一个**已验证命令注入漏洞**。攻击者可通过可控的 `mac` 参数利用该漏洞，导致以 root 权限执行远程代码。虽然该漏洞需要有效的会话令牌才能利用，但认证可以被轻易绕过：设备出厂时默认启用 `FirstLogin=1`（即默认开启无密码登录），攻击者只需发送一个无需认证的登录请求即可获取有效令牌
+​		An authenticated command injection vulnerability exists in the host_black handler of /protocol.csp on the WAVLINK WN536AX6-A router. The vulnerability can be exploited through the attacker-controlled mac parameter, leading to remote code execution with root privileges. Although a valid session token is required for exploitation, authentication can be trivially bypassed: the device ships with FirstLogin=1 (passwordless login enabled by default), allowing an attacker to obtain a valid token with a single unauthenticated login request.
 
 #   Impact
 
@@ -17,11 +17,13 @@ An authenticated attacker can inject arbitrary shell commands through the `desti
 
 #   Vulnerability Details
 
-在 ioos Web 后端 `/protocol.csp` 的 host_black（`fname=net&opt=host_black&function=set`）中，请求参数`mac` 在被直接拼接到 shell 命令 `setup_bannet_list.sh add \"%s\"` 之前未经过任何过滤或 sanitization，随后该命令通过 `system()` 执行。在设备的出厂默认配置下（`FirstLogin=1`，即启用无密码认证），攻击者仅需两步即可获得 root shell：首先发送请求到 `fname=system&opt=login&function=set&usrid=` 获取会话令牌；然后携带该令牌，访问包含注入 payload `group_id=aa" | <任意命令> #` 的请求，即可触发以 root 权限执行任意命令。
+In the ioos web backend, within the host_black handler of /protocol.csp (fname=net&opt=host_black&function=set), the request parameter mac is not sanitized before being directly concatenated into the shell command setup_bannet_list.sh add \"%s\", which is then executed via system(). Under the device's factory default configuration (FirstLogin=1, which enables passwordless authentication), an attacker needs only two steps to obtain a root shell: first, send a request to fname=system&opt=login&function=set&usrid= to retrieve a session token; then, with the token, access the injection payload mac=aa" | <arbitrary command> #, which triggers the execution of arbitrary commands with root privileges.
 
-![image-20260809211338954](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809211338954.png)
+<img width="737" height="109" alt="图片" src="https://github.com/user-attachments/assets/8791e444-a08c-49a5-9428-ab14ce8e2ef7" />
 
-![image-20260809211406510](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809211406510.png)
+
+<img width="1026" height="670" alt="图片" src="https://github.com/user-attachments/assets/f4bca85a-347c-4d40-a304-f7fefed5619f" />
+
 
 
 
@@ -29,7 +31,8 @@ Obtain the token, then perform the exploit.
 
 http://192.168.10.3/protocol.csp?fname=system&opt=login&function=set&usrid=
 
-![image-20260809212936326](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809212936326.png)
+<img width="1206" height="224" alt="图片" src="https://github.com/user-attachments/assets/31151a26-d0bb-4991-9383-c7d9de61c512" />
+
 
 **Obtain the token, then exploit the vulnerability.**
 
@@ -77,8 +80,9 @@ Connection: close
 
 # **Reproduction Results**
 
-![image-20260809200832092](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809200832092.png)
+<img width="1176" height="179" alt="图片" src="https://github.com/user-attachments/assets/4c5fdc0e-0296-4314-b984-f9ced004ba69" />
 
-![image-20260809212953162](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809212953162.png)
+<img width="1320" height="721" alt="图片" src="https://github.com/user-attachments/assets/59f7c35c-b525-47b4-8d11-b6961e739d96" />
 
-![image-20260809213014521](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809213014521.png)
+<img width="1439" height="499" alt="图片" src="https://github.com/user-attachments/assets/125d3742-ef4b-4975-b398-b0e98ef07bb7" />
+
