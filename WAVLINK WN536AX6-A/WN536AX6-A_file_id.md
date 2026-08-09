@@ -82,7 +82,7 @@ Connection: close
 
 ```
 
-复现结果
+Reproduction Results
 <img width="1176" height="179" alt="图片" src="https://github.com/user-attachments/assets/9a2e96bf-b26a-47af-a072-1b55d475009f" />
 
 
