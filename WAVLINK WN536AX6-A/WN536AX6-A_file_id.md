@@ -21,21 +21,24 @@ An authenticated attacker can inject arbitrary shell commands through the `desti
 
 #   Vulnerability Details
 
-在 ioos Web 后端 /protocol.csp 的 openvpn_cli 处理器（fname=net&opt=openvpn_cli&function=set）在构造 shell 命令时，未对请求参数 file_id 做任何过滤，直接将其拼入 uci show ovpnclient | grep "file_id='%s'" 并通过 popen()执行。攻击者在设备出厂默认状态（FirstLogin=1免密登录）下，仅需两步即可获得 root shell：先请求 fname=system&opt=login&function=set&usrid= 获取会话 token，再携带token 访问注入 payload file_id=aa" | <任意命令> # 即触发，命令以 root 权限执行
+In the ioos web backend, within the openvpn_cli handler of /protocol.csp (fname=net&opt=openvpn_cli&function=set), the request parameter file_id is not sanitized before being directly concatenated into the shell command uci show ovpnclient | grep "file_id='%s'", which is then executed via popen(). Under the device's factory default configuration (FirstLogin=1, which enables passwordless authentication), an attacker needs only two steps to obtain a root shell: first, send a request to fname=system&opt=login&function=set&usrid= to retrieve a session token; then, with the token, access the injection payload file_id=aa" | <arbitrary command> #, which triggers the execution of arbitrary commands with root privileges.
 
-![image-20260809202430969](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809202430969.png)
-
-![image-20260809202453544](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809202453544.png)
+<img width="1045" height="529" alt="图片" src="https://github.com/user-attachments/assets/f16a4f77-448d-47ff-bddb-9f2129803702" />
 
 
+<img width="1150" height="123" alt="图片" src="https://github.com/user-attachments/assets/938580ca-d9b0-4b8a-9fa1-2c0dded685fe" />
 
-需要获取token，出厂设置情况下直接免密获取，访问下面url就行
+
+
+
+A token is required. In factory default settings, it can be obtained without a password by simply accessing the following URL.
 
 http://192.168.10.3/protocol.csp?fname=system&opt=login&function=set&usrid=
 
-![image-20260809200559831](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809200559831.png)
+<img width="1313" height="179" alt="图片" src="https://github.com/user-attachments/assets/9a22e1e7-b5a6-431f-b021-d42bca82ed79" />
 
-拿到token，再进行漏洞利用
+
+Obtain the token, then perform the exploit.
 
 **exp**
 
@@ -80,11 +83,11 @@ Connection: close
 ```
 
 复现结果
-
-![image-20260809200832092](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809200832092.png)
-
+<img width="1176" height="179" alt="图片" src="https://github.com/user-attachments/assets/9a2e96bf-b26a-47af-a072-1b55d475009f" />
 
 
-![image-20260809200952352](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809200952352.png)
 
-![image-20260809201011445](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260809201011445.png)
+
+<img width="1257" height="487" alt="图片" src="https://github.com/user-attachments/assets/cc69f796-863b-4589-a32c-04c19f80e2c4" />
+
+<img width="1528" height="593" alt="图片" src="https://github.com/user-attachments/assets/8fd859db-c568-4a89-82ab-ff1603c32df4" />
