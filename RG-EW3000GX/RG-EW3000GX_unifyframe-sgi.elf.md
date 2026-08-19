@@ -22,15 +22,18 @@ An authenticated attacker can execute arbitrary commands with **root** privilege
 
 Load `/usr/sbin/unifyframe-sgi.elf` into IDA and locate the function `module_init_configChange`.
 
-![image-20260818114034307](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260818114034307.png)
+<img width="2070" height="877" alt="图片" src="https://github.com/user-attachments/assets/3b64f191-8609-47aa-8d5e-744ffa7fcc22" />
+
 
 Look at a few key actions here: it sets the module name to `configChange`, and then binds it to **`sub_414D58`**. Double-click to enter.
 
-![image-20260818115206988](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260818115206988.png)
+<img width="2125" height="858" alt="图片" src="https://github.com/user-attachments/assets/223d736a-790e-4704-9b40-e69fccf15db8" />
+
 
 Retrieve the values of the three parameters `url`, `module`, and `function`, and assign the value of `url` to a string.
 
-![image-20260818115258277](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260818115258277.png)
+<img width="2576" height="996" alt="图片" src="https://github.com/user-attachments/assets/3d2c81e5-21ae-414a-88d8-5e918465a4f2" />
+
 
 Going further down here, it actually does a little bit of checking — it verifies whether `string` contains `$(` or backticks. Then it uses `snprintf` to concatenate the string, and finally passes it to `ufm_popen`, which is `popen`, to execute the command.
 
@@ -55,5 +58,6 @@ Connection: keep-alive
 
 **Execution result**
 
-![image-20260818120444641](C:\Users\余雨波\AppData\Roaming\Typora\typora-user-images\image-20260818120444641.png)
+<img width="2510" height="992" alt="图片" src="https://github.com/user-attachments/assets/e18a935d-525a-435d-ad9f-58ae3039af50" />
+
 
